@@ -1,0 +1,7 @@
+.DS_Store
+.idea/
+messages
+.env
+token.pickle
+credentials.json
+emails
