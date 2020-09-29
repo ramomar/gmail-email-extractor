@@ -73,7 +73,7 @@ def make_message(message):
     return {
         'id': message_id,
         'from': from_header_value,
-        'internal_date': internal_date,
+        'internal_date': int(internal_date),
         'body': body,
     }
 
