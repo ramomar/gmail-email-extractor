@@ -15,5 +15,5 @@ The script should download your emails to the `emails` folder in the root of the
 ## Example
 
 ```bash
-python main.py 'after:2019/05/05 from:notificacionesbanorte@banorte.com OR from:notificaciones@banorte.com'
+python main.py ~/emails 'after:2019/05/05 from:notificacionesbanorte@banorte.com OR from:notificaciones@banorte.com'
 ```

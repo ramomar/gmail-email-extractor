@@ -77,8 +77,8 @@ def make_message(message):
         'body': body,
     }
 
-
-query = sys.argv[1]
+output_folder = sys.argv[1]
+query = sys.argv[2]
 next_page_token = None
 message_ids = []
 
@@ -96,7 +96,7 @@ while True:
 
 # Make directory for storing messages
 try:
-    os.mkdir('emails')
+    os.mkdir(output_folder)
 except FileExistsError:
     pass
 
@@ -105,5 +105,5 @@ for message_id in message_ids:
     get_message_by_id_result = make_get_message_by_id_request(id=message_id, gmail=gmail).execute()
     message = make_message(get_message_by_id_result)
 
-    with open(f'emails/{message["id"]}.json', 'w') as message_file:
+    with open(f'{output_folder}/{message["id"]}.json', 'w') as message_file:
         json.dump(message, message_file)
