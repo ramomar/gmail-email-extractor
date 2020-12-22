@@ -8,9 +8,9 @@ In order to use it:
 
 1. Install the project dependencies.
 2. Go to the Google console and download your `credentials.json` in the root of the project.
-3. Run `python main.py $QUERY`.
+3. Run `python main.py $OUTPUT_PATH $QUERY`.
 
-The script should download your emails to the `emails` folder in the root of the project.
+The script should download your emails to the specified directory.
 
 ## Example
 
