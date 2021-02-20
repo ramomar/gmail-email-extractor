@@ -104,6 +104,9 @@ except FileExistsError:
 for message_id in message_ids:
     get_message_by_id_result = make_get_message_by_id_request(id=message_id, gmail=gmail).execute()
     message = make_message(get_message_by_id_result)
+    message_id = message['id']
 
-    with open(f'{output_folder}/{message["id"]}.json', 'w') as message_file:
+    with open(f'{output_folder}/{message_id}.json', 'w') as message_file:
         json.dump(message, message_file)
+    
+    print(message_id)
