@@ -7,32 +7,6 @@ from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 
-# Taken from https://developers.google.com/gmail/api/quickstart/python
-
-# If modifying these scopes, delete the file token.pickle.
-SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
-
-creds = None
-# The file token.pickle stores the user's access and refresh tokens, and is
-# created automatically when the authorization flow completes for the first
-# time.
-if os.path.exists('token.pickle'):
-    with open('token.pickle', 'rb') as token:
-        creds = pickle.load(token)
-# If there are no (valid) credentials available, let the user log in.
-if not creds or not creds.valid:
-    if creds and creds.expired and creds.refresh_token:
-        creds.refresh(Request())
-    else:
-        flow = InstalledAppFlow.from_client_secrets_file(
-            'credentials.json', SCOPES)
-        creds = flow.run_local_server(port=0)
-    # Save the credentials for the next run
-    with open('token.pickle', 'wb') as token:
-        pickle.dump(creds, token)
-
-gmail = build('gmail', 'v1', credentials=creds)
-
 
 # Extract emails
 
@@ -77,36 +51,68 @@ def make_message(message):
         'body': body,
     }
 
-output_folder = sys.argv[1]
-query = sys.argv[2]
-next_page_token = None
-message_ids = []
 
-# Get message ids
-while True:
-    get_message_ids_result = make_get_message_ids_request(query=query, page_token=next_page_token, gmail=gmail).execute()
-    next_page_token = get_message_ids_result['nextPageToken'] if 'nextPageToken' in get_message_ids_result else None
+def main():
+    output_folder = sys.argv[1]
+    query = sys.argv[2]
+    next_page_token = None
+    message_ids = []
 
-    ids = [message['id'] for message in get_message_ids_result['messages']]
+    # Taken from https://developers.google.com/gmail/api/quickstart/python
 
-    message_ids = message_ids + ids
+    # If modifying these scopes, delete the file token.pickle.
+    SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
 
-    if not next_page_token:
-        break
+    creds = None
+    # The file token.pickle stores the user's access and refresh tokens, and is
+    # created automatically when the authorization flow completes for the first
+    # time.
+    if os.path.exists('token.pickle'):
+        with open('token.pickle', 'rb') as token:
+            creds = pickle.load(token)
+    # If there are no (valid) credentials available, let the user log in.
+    if not creds or not creds.valid:
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+        else:
+            flow = InstalledAppFlow.from_client_secrets_file(
+                'credentials.json', SCOPES)
+            creds = flow.run_local_server(port=0)
+        # Save the credentials for the next run
+        with open('token.pickle', 'wb') as token:
+            pickle.dump(creds, token)
 
-# Make directory for storing messages
-try:
-    os.mkdir(output_folder)
-except FileExistsError:
-    pass
+    gmail = build('gmail', 'v1', credentials=creds)
 
-# Get and store messages
-for message_id in message_ids:
-    get_message_by_id_result = make_get_message_by_id_request(id=message_id, gmail=gmail).execute()
-    message = make_message(get_message_by_id_result)
-    message_id = message['id']
+    # Get message ids
+    while True:
+        get_message_ids_result = make_get_message_ids_request(query=query, page_token=next_page_token, gmail=gmail).execute()
+        next_page_token = get_message_ids_result['nextPageToken'] if 'nextPageToken' in get_message_ids_result else None
 
-    with open(f'{output_folder}/{message_id}.json', 'w') as message_file:
-        json.dump(message, message_file)
-    
-    print(message_id)
+        ids = [message['id'] for message in get_message_ids_result['messages']]
+
+        message_ids = message_ids + ids
+
+        if not next_page_token:
+            break
+
+    # Make directory for storing messages
+    try:
+        os.mkdir(output_folder)
+    except FileExistsError:
+        pass
+
+    # Get and store messages
+    for message_id in message_ids:
+        get_message_by_id_result = make_get_message_by_id_request(id=message_id, gmail=gmail).execute()
+        message = make_message(get_message_by_id_result)
+        message_id = message['id']
+
+        with open(f'{output_folder}/{message_id}.json', 'w') as message_file:
+            json.dump(message, message_file)
+
+        print(message_id)
+
+
+if __name__ == '__main__':
+    main()
