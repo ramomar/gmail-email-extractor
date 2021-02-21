@@ -8,8 +8,6 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 
 
-# Extract emails
-
 def make_get_message_ids_request(query, page_token, gmail):
     params = {
         'userId': 'me',
