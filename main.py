@@ -51,11 +51,6 @@ def make_message(message):
 
 
 def main():
-    output_folder = sys.argv[1]
-    query = sys.argv[2]
-    next_page_token = None
-    message_ids = []
-
     # Taken from https://developers.google.com/gmail/api/quickstart/python
 
     # If modifying these scopes, delete the file token.pickle.
@@ -80,6 +75,10 @@ def main():
         with open('token.pickle', 'wb') as token:
             pickle.dump(creds, token)
 
+    output_folder = sys.argv[1]
+    query = sys.argv[2]
+    next_page_token = None
+    message_ids = []
     gmail = build('gmail', 'v1', credentials=creds)
 
     # Get message ids
